@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open House Map - Property & Home Detail Mapper</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            padding: 60px 40px;
+            text-align: center;
+            border-bottom: 3px solid #f59e0b;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        .hero p {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .demo-badge {
+            display: inline-block;
+            background: #f59e0b;
+            color: #0f172a;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-top: 16px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .view-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .view-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            border-left: 4px solid #3b82f6;
+            transition: all 0.2s;
+        }
+
+        .view-card:hover {
+            transform: translateY(-4px);
+            border-left-color: #f59e0b;
+        }
+
+        .view-card h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #f59e0b;
+        }
+
+        .view-card p {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .view-card .btn {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .view-card .btn:hover {
+            background: #2563eb;
+        }
+
+        .view-card .status {
+            display: inline-block;
+            background: #22c55e;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .view-card .status.beta {
+            background: #f59e0b;
+            color: #0f172a;
+        }
+
+        .section-title {
+            font-size: 28px;
+            margin-bottom: 24px;
+            color: #f59e0b;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .tech-item {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .tech-item .icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .tech-item .name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .tech-item .desc {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .info-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .info-card h4 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #3b82f6;
+        }
+
+        .info-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid #334155;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .info-card li:last-child {
+            border-bottom: none;
+        }
+
+        .info-card li::before {
+            content: "✓ ";
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        footer {
+            background: #1e293b;
+            padding: 40px 20px;
+            text-align: center;
+            border-top: 1px solid #334155;
+        }
+
+        footer p {
+            font-size: 14px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>Open House Map</h1>
+        <p>Private property and home detail mapper. Map your land and house at architectural detail — entirely private, entirely local.</p>
+        <div class="demo-badge">
+            <i class="fas fa-fire"></i> Demo: 16 Belinda Drive, Newport News, VA
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">View Modes</h2>
+        <div class="view-grid">
+            <div class="view-card">
+                <span class="status">v1.0.0</span>
+                <h3>🗺️ Property Map</h3>
+                <p>Interactive OSM map with parcel boundaries, property features, and versioned data tracking. Fetch OSM baseline and annotate your property.</p>
+                <a href="index.html" class="btn">Launch Map</a>
+            </div>
+
+            <div class="view-card">
+                <span class="status">v1.0.0</span>
+                <h3>📐 Floor Plan</h3>
+                <p>Interactive 2D floor plan based on real blueprints. Click rooms to view dimensions and features. Toggle electrical and plumbing overlays.</p>
+                <a href="floor_plan.html" class="btn">Launch Floor Plan</a>
+            </div>
+
+            <div class="view-card">
+                <span class="status">v1.0.0</span>
+                <h3>🏠 3D House Model</h3>
+                <p>Full 3D model of 16 Belinda Drive with real proportions. Explore exterior walls, roof, windows, doors, and landscaping.</p>
+                <a href="3d_model.html" class="btn">Launch 3D Model</a>
+            </div>
+
+            <div class="view-card">
+                <span class="status beta">Beta</span>
+                <h3>🔧 Structural Model</h3>
+                <p>Foundation system, wall assemblies, and fireplace details from blueprint cross-sections. See every layer from footer to roof.</p>
+                <a href="structural_model.html" class="btn">Launch Structural</a>
+            </div>
+        </div>
+
+        <h2 class="section-title">Tech Stack</h2>
+        <div class="tech-stack">
+            <div class="tech-item">
+                <div class="icon">🗺️</div>
+                <div class="name">Leaflet.js</div>
+                <div class="desc">OpenStreetMap tiles</div>
+            </div>
+            <div class="tech-item">
+                <div class="icon">🎨</div>
+                <div class="name">Three.js</div>
+                <div class="desc">WebGL 3D rendering</div>
+            </div>
+            <div class="tech-item">
+                <div class="icon">💾</div>
+                <div class="name">localStorage</div>
+                <div class="desc">100% private storage</div>
+            </div>
+            <div class="tech-item">
+                <div class="icon">📄</div>
+                <div class="name">JSON</div>
+                <div class="desc">Data export/import</div>
+            </div>
+            <div class="tech-item">
+                <div class="icon">🎭</div>
+                <div class="name">Vanilla JS</div>
+                <div class="desc">No framework overhead</div>
+            </div>
+            <div class="tech-item">
+                <div class="icon">📱</div>
+                <div class="name">Responsive</div>
+                <div class="desc">Mobile-friendly UI</div>
+            </div>
+        </div>
+
+        <div class="info-cards">
+            <div class="info-card">
+                <h4>🏠 House Details (16 Belinda Drive)</h4>
+                <ul>
+                    <li>Single Story, ~2,871 sq ft</li>
+                    <li>59'-10" × 35'-10" footprint</li>
+                    <li>10 rooms total</li>
+                    <li>Attached garage (12' × 23')</li>
+                    <li>Crawl space foundation</li>
+                    <li>4" brick veneer exterior</li>
+                    <li>R-11 insulation in walls</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h4>🏗️ Structural Details</h4>
+                <ul>
+                    <li>8" block foundation walls</li>
+                    <li>2x4 studs @ 16" O.C.</li>
+                    <li>2x8 floor joists</li>
+                    <li>2x6 rafters @ 16" O.C.</li>
+                    <li>Masonry fireplace with firebrick</li>
+                    <li>.006" Visqueen vapor barrier</li>
+                    <li>8"×20" concrete footings</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h4>🔒 Privacy & Security</h4>
+                <ul>
+                    <li>All data stays in browser</li>
+                    <li>No cloud sync or analytics</li>
+                    <li>Export to JSON for backup</li>
+                    <li>No vendor lock-in</li>
+                    <li>Open standards only</li>
+                    <li>User owns all data</li>
+                    <li>No network requests to data services</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Open House Map — Private Property & Home Detail Mapper</p>
+        <p style="margin-top: 8px;">16 Belinda Drive, Newport News, VA 23601 | Version 1.0.0</p>
+    </footer>
+</body>
+</html>

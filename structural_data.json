@@ -1,0 +1,228 @@
+{
+  "address": "16 Belinda Drive, Newport News, VA 23601",
+  "structural_data": {
+    "foundation": {
+      "type": "Crawl Space with Concrete Footings",
+      "dimensions": {
+        "main_frame": {
+          "width": "59'-0\"",
+          "depth": "23'-0\""
+        },
+        "front_wing": {
+          "depth": "33'-0\""
+        },
+        "total_width_brick": "59'-10\"",
+        "total_depth_brick": "35'-10\""
+      },
+      "footings": {
+        "type": "Concrete",
+        "main_footing": "8\"x20\" concrete below frost line",
+        "pier_footings": "8\"x16\"x24\" concrete piers"
+      },
+      "piers": {
+        "size": "8\"x16\" masonry",
+        "spacing": "7'-0\" to 7'-3\" centers",
+        "material": "Concrete masonry units (CMU)"
+      },
+      "girders": {
+        "spec": "(3) 2x8 lumber",
+        "span": "Supporting floor joists"
+      },
+      "crawl_space": {
+        "treatment": "Soil Poison (termite/pest pretreatment)",
+        "vapor_barrier": ".006\" Visqueen moisture barrier",
+        "ventilation": {
+          "type": "8\"x16\" Screened Adjustable Vents",
+          "location": "Perimeter foundation walls"
+        },
+        "access": {
+          "type": "16\"x32\" Steel Access Door",
+          "location": "Front projection area"
+        }
+      },
+      "garage_substructure": {
+        "type": "Concrete Slab",
+        "thickness": "4\"",
+        "features": [
+          "Conc. Slab flooring",
+          "40\"x30\" Conc Pad with hose bib"
+        ]
+      }
+    },
+    "wall_assembly": {
+      "exterior": {
+        "layers": [
+          {
+            "name": "Brick Veneer",
+            "thickness": "4\"",
+            "material": "Clay brick",
+            "notes": "With weep holes at bottom"
+          },
+          {
+            "name": "Air Space",
+            "thickness": "1\"",
+            "material": "Ventilation gap",
+            "notes": "Between brick and sheathing"
+          },
+          {
+            "name": "Building Paper",
+            "thickness": "0.01\"",
+            "material": "House wrap/felt",
+            "notes": "Weather barrier"
+          },
+          {
+            "name": "Sheathing",
+            "thickness": "1/2\"",
+            "material": "OSB/plywood",
+            "notes": "Structural sheathing"
+          },
+          {
+            "name": "Studs",
+            "thickness": "3.5\"",
+            "material": "2x4 lumber",
+            "spacing": "16\" O.C.",
+            "notes": "Structural framing"
+          },
+          {
+            "name": "Insulation",
+            "thickness": "3-1/2\"",
+            "material": "Fiberglass batt (R-11)",
+            "notes": "Between studs"
+          },
+          {
+            "name": "Sheetrock",
+            "thickness": "1/2\"",
+            "material": "Gypsum board",
+            "notes": "Interior finish"
+          }
+        ]
+      },
+      "foundation_wall": {
+        "layers": [
+          {
+            "name": "Concrete Footing",
+            "thickness": "8\"x20\"",
+            "material": "Reinforced concrete",
+            "notes": "Below frost line"
+          },
+          {
+            "name": "Block Wall",
+            "thickness": "8\"",
+            "material": "Concrete masonry unit (CMU)",
+            "notes": "Foundation wall"
+          },
+          {
+            "name": "Brick Veneer",
+            "thickness": "4\"",
+            "material": "Clay brick",
+            "notes": "Attached with metal ties"
+          }
+        ]
+      },
+      "floor_assembly": {
+        "layers": [
+          {
+            "name": "Fin Floor",
+            "thickness": "varies",
+            "material": "Hardwood/tile/carpet",
+            "notes": "Finished surface"
+          },
+          {
+            "name": "Particle Board",
+            "thickness": "5/8\"",
+            "material": "OSB/particle board",
+            "notes": "Subfloor"
+          },
+          {
+            "name": "Floor Joists",
+            "thickness": "1.5\"",
+            "material": "2x8 lumber",
+            "notes": "Structural floor support"
+          },
+          {
+            "name": "Sill Plate",
+            "thickness": "1.5\"",
+            "material": "2x6 lumber",
+            "notes": "Bolted to foundation"
+          }
+        ],
+        "anchor_bolts": "1/2\" Φ x 10\" anchors",
+        "joint_insulation": "2x8 Joint Wool"
+      },
+      "ceiling_height": "8'-0\" finished",
+      "roof_assembly": {
+        "layers": [
+          {
+            "name": "Asphalt Shingles",
+            "thickness": "0.75\"",
+            "material": "240# architectural shingles",
+            "notes": "Exterior roofing"
+          },
+          {
+            "name": "Plywood Deck",
+            "thickness": "1/2\"",
+            "material": "Structural plywood",
+            "notes": "Roof sheathing"
+          },
+          {
+            "name": "Rafters",
+            "thickness": "1.5\"",
+            "material": "2x6 lumber",
+            "spacing": "16\" O.C.",
+            "notes": "Structural roof framing"
+          }
+        ],
+        "overhang": {
+          "fascia": "1x6 lumber",
+          "gutter": "Metal (aluminum/galvanized)",
+          "soffit": "1/4\" ventilation panel",
+          "trim": "2\" Bed Mold"
+        }
+      }
+    },
+    "fireplace": {
+      "type": "Masonry Fireplace",
+      "footing": {
+        "depth": "12\"",
+        "extension": "6\" past masonry",
+        "material": "Reinforced concrete"
+      },
+      "firebox": {
+        "inner_lining": "Fire brick set in fire clay mortar",
+        "outer_masonry": "8\" Min Solid Masonry",
+        "damper": "Steel damper for airflow control",
+        "hearth": {
+          "material": "Concrete",
+          "extension": "Extends into room",
+          "purpose": "Spark protection"
+        },
+        "angle_iron": "Steel angle to support brick above opening"
+      },
+      "chimney": {
+        "flue": "Terra cotta clay (T.C. Flue)",
+        "material": "Masonry",
+        "notes": "Runs up through house"
+      },
+      "exterior_finish": {
+        "face": "Brick",
+        "mantel": "Custom wood mantel shelf",
+        "notes": "Classic brick face design"
+      }
+    },
+    "structural_connections": {
+      "sill_plate_to_foundation": {
+        "anchor": "1/2\" Φ x 10\" anchors",
+        "plate": "2x6 sill plate"
+      },
+      "brick_to_wall": {
+        "tie": "Metal ties",
+        "spacing": "16\" O.C.",
+        "notes": "Secures brick veneer to framing"
+      },
+      "wall_to_roof": {
+        "connection": "Rafters to top plate",
+        "notes": "Standard truss/rafter connection"
+      }
+    }
+  }
+}

@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16 Belinda Drive - Floor Plan</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            padding: 24px;
+            text-align: center;
+            border-bottom: 3px solid #f59e0b;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+            color: #e2e8f0;
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh - 100px);
+        }
+
+        .floor-plan-container {
+            flex: 2;
+            background: #ffffff;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+        }
+
+        .floor-plan {
+            position: relative;
+            width: 700px;
+            height: 500px;
+        }
+
+        .wall {
+            position: absolute;
+            background: #334155;
+            border: 2px solid #475569;
+        }
+
+        .wall-horizontal {
+            height: 3px;
+            width: 100%;
+        }
+
+        .wall-vertical {
+            width: 3px;
+            height: 100%;
+        }
+
+        .room {
+            position: absolute;
+            border: 2px solid #475569;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .room:hover {
+            background: #e0f2fe;
+            border-color: #0ea5e9;
+            transform: scale(1.02);
+            z-index: 10;
+        }
+
+        .room.active {
+            background: #bae6fd;
+            border-color: #0284c7;
+            z-index: 15;
+        }
+
+        .room-name {
+            font-weight: 700;
+            font-size: 14px;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .room-dimensions {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Room specific positioning based on blueprint */
+        .room-garage {
+            left: 0;
+            top: 0;
+            width: 125px;
+            height: 300px;
+        }
+
+        .room-kitchen {
+            left: 125px;
+            top: 0;
+            width: 160px;
+            height: 180px;
+        }
+
+        .room-living {
+            left: 285px;
+            top: 0;
+            width: 340px;
+            height: 180px;
+        }
+
+        .room-dining {
+            left: 285px;
+            top: 180px;
+            width: 340px;
+            height: 180px;
+        }
+
+        .room-family {
+            left: 125px;
+            top: 180px;
+            width: 160px;
+            height: 180px;
+        }
+
+        .room-master {
+            left: 465px;
+            top: 0;
+            width: 200px;
+            height: 200px;
+        }
+
+        .room-bedroom1 {
+            left: 465px;
+            top: 200px;
+            width: 160px;
+            height: 160px;
+        }
+
+        .room-bedroom2 {
+            left: 625px;
+            top: 200px;
+            width: 125px;
+            height: 160px;
+        }
+
+        .room-hall-bath {
+            left: 465px;
+            top: 360px;
+            width: 100px;
+            height: 100px;
+        }
+
+        .room-ensuite {
+            left: 565px;
+            top: 360px;
+            width: 100px;
+            height: 100px;
+        }
+
+        /* Door indicators */
+        .door {
+            position: absolute;
+            background: #92400e;
+            border-radius: 50%;
+            z-index: 5;
+        }
+
+        .door-arcs {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px dashed #92400e;
+            border-radius: 50%;
+            opacity: 0.5;
+            z-index: 4;
+        }
+
+        /* Features panel */
+        .features-panel {
+            flex: 1;
+            background: #1e293b;
+            padding: 24px;
+            overflow-y: auto;
+            border-left: 1px solid #334155;
+        }
+
+        .panel-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #f59e0b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .room-info {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .room-info h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #3b82f6;
+        }
+
+        .room-info .dimensions {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-list i {
+            color: #22c55e;
+            font-size: 12px;
+        }
+
+        /* Legend */
+        .legend {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .legend h4 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #e2e8f0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        /* Scale indicator */
+        .scale-indicator {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+            border: 2px solid #475569;
+        }
+
+        /* Utility overlay */
+        .utilities-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 20;
+        }
+
+        .utilities-toggle:hover {
+            background: #2563eb;
+        }
+
+        .electrical-overlay, .plumbing-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 25;
+            display: none;
+        }
+
+        .electrical-overlay.active, .plumbing-overlay.active {
+            display: block;
+        }
+
+        .circuit-line {
+            stroke: #f59e0b;
+            stroke-width: 2;
+            stroke-dasharray: 5,5;
+            fill: none;
+        }
+
+        .fixture-point {
+            fill: #ef4444;
+            r: 3;
+        }
+
+        .water-line {
+            stroke: #06b6d4;
+            stroke-width: 3;
+            fill: none;
+        }
+
+        .fixture-water {
+            fill: #06b6d4;
+            r: 3;
+        }
+
+        .no-data {
+            color: #64748b;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>
+            <i class="fas fa-home"></i> 16 Belinda Drive - Interactive Floor Plan
+        </h1>
+        <p>Newport News, VA 23601 | Single Story | 2,871 sq ft (estimated) | Scale: 1/4" = 1'-0"</p>
+    </div>
+
+    <div class="main-container">
+        <div class="floor-plan-container">
+            <div class="floor-plan" id="floorPlan">
+                <!-- Walls -->
+                <div class="wall wall-horizontal" style="top: 0;"></div>
+                <div class="wall wall-horizontal" style="top: 180px;"></div>
+                <div class="wall wall-horizontal" style="top: 360px;"></div>
+                <div class="wall wall-horizontal" style="top: 500px;"></div>
+                <div class="wall wall-vertical" style="left: 125px;"></div>
+                <div class="wall wall-vertical" style="left: 285px;"></div>
+                <div class="wall wall-vertical" style="left: 465px;"></div>
+                <div class="wall wall-vertical" style="left: 625px;"></div>
+
+                <!-- Rooms -->
+                <div class="room room-garage" data-room="garage">
+                    <div class="room-name">Garage</div>
+                    <div class="room-dimensions">12'0" x 23'0"</div>
+                    <div class="room-features" style="font-size: 10px; color: #64748b;">
+                        • OH Door 8'x7'
+                        <br>• 4" Conc Slab
+                        <br>• Disappearing Stairs
+                    </div>
+                </div>
+
+                <div class="room room-kitchen" data-room="kitchen">
+                    <div class="room-name">Kitchen</div>
+                    <div class="room-dimensions">12'4" x 12'0"</div>
+                    <div class="room-features" style="font-size: 10px; color: #64748b;">
+                        • Double Sink
+                        <br>• Range/Stove
+                        <br>• Refrigerator Space
+                    </div>
+                </div>
+
+                <div class="room room-living" data-room="living">
+                    <div class="room-name">Living Room</div>
+                    <div class="room-dimensions">25'8" x 12'0"</div>
+                    <div class="room-features" style="font-size: 10px; color: #64748b;">
+                        • Open Concept
+                        <br>• Brick Steps
+                        <br>• Main Entry
+                    </div>
+                </div>
+
+                <div class="room room-dining" data-room="dining">
+                    <div class="room-name">Dining Area</div>
+                    <div class="room-dimensions">25'8" x 12'0"</div>
+                    <div class="room-features" style="font-size: 10px; color: #64748b;">
+                        • Open to Kitchen
+                        <br>• Large Windows
+                    </div>
+                </div>
+
+                <div class="room room-family" data-room="family">
+                    <div class="room-name">Family Room</div>
+                    <div class="room-dimensions">15'0" x 15'0"</div>
+                    <div class="room-features" style="font-size: 10px; color: #64748b;">
+                        • Rear Exit
+                        <br>• Brick Steps
+                        <br>• Window Unit
+                    </div>
+                </div>
+
+                <div class="room room-master" data-room="master">
+                    <div class="room-name">Master Bedroom</div>
+                    <div class="room-dimensions">15'8" x 12'0"</div>
+                    <div class="room-features" style="font-size: 10px; color: #64748b;">
+                        • Built-in Closet
+                        <br>• Rear Corner
+                    </div>
+                </div>
+
+                <div class="room room-bedroom1" data-room="bedroom1">
+                    <div class="room-name">Bedroom 1</div>
+                    <div class="room-dimensions">11'7" x 11'2"</div>
+                    <div class="room-features" style="font-size: 10px; color: #64748b;">
+                        • Front Window
+                        <br>• Built-in Closet
+                    </div>
+                </div>
+
+                <div class="room room-bedroom2" data-room="bedroom2">
+                    <div class="room-name">Bedroom 2</div>
+                    <div class="room-dimensions">9'11" x 11'2"</div>
+                    <div class="room-features" style="font-size: 10px; color: #64748b;">
+                        • Front Window
+                        <br>• Closet
+                    </div>
+                </div>
+
+                <div class="room room-hall-bath" data-room="hallbath">
+                    <div class="room-name">Hall Bath</div>
+                    <div class="room-dimensions">5'0" Tub</div>
+                    <div class="room-features" style="font-size: 10px; color: #64748b;">
+                        • Tub/Shower Combo
+                        <br>• Vanity
+                    </div>
+                </div>
+
+                <div class="room room-ensuite" data-room="ensuite">
+                    <div class="room-name">Ensuite</div>
+                    <div class="room-dimensions">3'0" Shower</div>
+                    <div class="room-features" style="font-size: 10px; color: #64748b;">
+                        • Shower Stall
+                        <br>• Sink
+                    </div>
+                </div>
+
+                <!-- SVG Overlay for Electrical and Plumbing -->
+                <svg class="electrical-overlay" id="electricalOverlay" viewBox="0 0 700 500">
+                    <!-- Circuit lines -->
+                    <path class="circuit-line" d="M 100,50 L 200,50 L 200,150 L 300,150" />
+                    <path class="circuit-line" d="M 400,200 L 400,300 L 500,300" />
+                    <path class="circuit-line" d="M 600,100 L 600,200 L 600,300" />
+                    
+                    <!-- Light fixtures -->
+                    <circle class="fixture-point" cx="100" cy="50" />
+                    <circle class="fixture-point" cx="200" cy="50" />
+                    <circle class="fixture-point" cx="200" cy="150" />
+                    <circle class="fixture-point" cx="300" cy="150" />
+                    <circle class="fixture-point" cx="400" cy="200" />
+                    <circle class="fixture-point" cx="400" cy="300" />
+                    <circle class="fixture-point" cx="500" cy="300" />
+                    <circle class="fixture-point" cx="600" cy="100" />
+                    <circle class="fixture-point" cx="600" cy="200" />
+                    <circle class="fixture-point" cx="600" cy="300" />
+                </svg>
+
+                <svg class="plumbing-overlay" id="plumbingOverlay" viewBox="0 700 500">
+                    <!-- Water lines -->
+                    <path class="water-line" d="M 100,100 L 200,100 L 200,200 L 300,200" />
+                    <path class="water-line" d="M 400,150 L 400,250 L 500,250" />
+                    <path class="water-line" d="M 600,50 L 600,150 L 600,250" />
+                    
+                    <!-- Water fixtures -->
+                    <circle class="fixture-water" cx="100" cy="100" />
+                    <circle class="fixture-water" cx="200" cy="100" />
+                    <circle class="fixture-water" cx="200" cy="200" />
+                    <circle class="fixture-water" cx="300" cy="200" />
+                    <circle class="fixture-water" cx="400" cy="150" />
+                    <circle class="fixture-water" cx="400" cy="250" />
+                    <circle class="fixture-water" cx="500" cy="250" />
+                    <circle class="fixture-water" cx="600" cy="50" />
+                    <circle class="fixture-water" cx="600" cy="150" />
+                    <circle class="fixture-water" cx="600" cy="250" />
+                </svg>
+
+                <!-- Scale indicator -->
+                <div class="scale-indicator">1/4" = 1'-0"</div>
+
+                <!-- Utilities toggle -->
+                <button class="utilities-toggle" id="toggleElectrical">
+                    <i class="fas fa-bolt"></i> Electrical
+                </button>
+                <button class="utilities-toggle" id="togglePlumbing" style="right: 140px;">
+                    <i class="fas fa-faucet"></i> Plumbing
+                </button>
+            </div>
+        </div>
+
+        <div class="features-panel">
+            <div class="panel-title">
+                <i class="fas fa-building"></i> Property Details
+            </div>
+
+            <div class="room-info" id="roomInfo">
+                <h3 id="roomName">Select a Room</h3>
+                <div class="dimensions" id="roomDimensions">Click on any room to view details</div>
+                <ul class="feature-list" id="featureList">
+                    <li class="no-data">No room selected</li>
+                </ul>
+            </div>
+
+            <div class="legend">
+                <h4><i class="fas fa-info-circle"></i> Legend</h4>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #3b82f6;"></div>
+                    <span>Rooms with details</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ef4444;"></div>
+                    <span>Light fixtures (electrical)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #06b6d4;"></div>
+                    <span>Plumbing fixtures</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #92400e;"></div>
+                    <span>Doors (wood)</span>
+                </div>
+            </div>
+
+            <div class="room-info">
+                <h3>Key Features</h3>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> Single-story layout</li>
+                    <li><i class="fas fa-check"></i> Attached 1-car garage</li>
+                    <li><i class="fas fa-check"></i> Open concept living</li>
+                    <li><i class="fas fa-check"></i> Master bedroom suite</li>
+                    <li><i class="fas fa-check"></i> Two additional bedrooms</li>
+                    <li><i class="fas fa-check"></i> Two full bathrooms</li>
+                    <li><i class="fas fa-check"></i> Brick exterior</li>
+                    <li><i class="fas fa-check"></i> Concrete slab foundation</li>
+                </ul>
+            </div>
+
+            <div class="room-info">
+                <h3>Address</h3>
+                <p>16 Belinda Drive<br>Newport News, VA 23601</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Room data
+        const roomData = {
+            garage: {
+                name: 'Garage',
+                dimensions: '12\'0" W × 23\'0" D',
+                features: [
+                    '8\'×7\' Wood Overhead Door',
+                    '4" Concrete Slab Flooring',
+                    'Disappearing Stairs to Attic',
+                    '2×8 Joists (16" O.C.)',
+                    '40×30 Concrete Pad with Hose Bib'
+                ]
+            },
+            kitchen: {
+                name: 'Kitchen',
+                dimensions: '12\'4" W × 12\'0" D',
+                features: [
+                    'Double Sink under Window',
+                    '36" Counter',
+                    'Range/Stove Space',
+                    'Refrigerator Space',
+                    '3\'2" Opening to Family Room'
+                ]
+            },
+            living: {
+                name: 'Living Room',
+                dimensions: '25\'8" W × 12\'0" D',
+                features: [
+                    'Open Concept with Dining',
+                    'Front Porch with Brick Steps',
+                    'Main Entry Door',
+                    'Large Windows',
+                    'Hardwood Flooring'
+                ]
+            },
+            dining: {
+                name: 'Dining Area',
+                dimensions: '25\'8" W × 12\'0" D',
+                features: [
+                    'Open Concept with Living',
+                    'Large Windows',
+                    'Hardwood Flooring',
+                    'Ample Natural Light'
+                ]
+            },
+            family: {
+                name: 'Family Room',
+                dimensions: '15\'0" L × 15\'0" W',
+                features: [
+                    'Window Unit (36/30/20)',
+                    'Rear Exit Door with Brick Steps',
+                    'Adjacent to Kitchen',
+                    'Hardwood Flooring'
+                ]
+            },
+            master: {
+                name: 'Master Bedroom',
+                dimensions: '15\'8" W × 12\'0" D',
+                features: [
+                    'Rear Right Corner',
+                    'Built-in Closet',
+                    'Hardwood Flooring',
+                    'Large Windows'
+                ]
+            },
+            bedroom1: {
+                name: 'Bedroom 1',
+                dimensions: '11\'7" W × 11\'2" D',
+                features: [
+                    'Front Facing Window',
+                    'Built-in Closet',
+                    'Hardwood Flooring'
+                ]
+            },
+            bedroom2: {
+                name: 'Bedroom 2',
+                dimensions: '9\'11" W × 11\'2" D',
+                features: [
+                    'Front Facing Window',
+                    'Dedicated Closet',
+                    'Hardwood Flooring'
+                ]
+            },
+            hallbath: {
+                name: 'Hall Bathroom',
+                dimensions: '5\'0" Tub Length',
+                features: [
+                    '5\'0" Tub/Shower Combo',
+                    'Toilet',
+                    'Vanity/Sink',
+                    'Hardwood Flooring'
+                ]
+            },
+            ensuite: {
+                name: 'Ensuite Bathroom',
+                dimensions: '3\'0" Shower Length',
+                features: [
+                    '3\'0" Shower Stall',
+                    'Toilet',
+                    'Sink',
+                    'Hardwood Flooring'
+                ]
+            }
+        };
+
+        // Handle room clicks
+        const rooms = document.querySelectorAll('.room');
+        const roomInfo = document.getElementById('roomInfo');
+        const roomName = document.getElementById('roomName');
+        const roomDimensions = document.getElementById('roomDimensions');
+        const featureList = document.getElementById('featureList');
+
+        rooms.forEach(room => {
+            room.addEventListener('click', () => {
+                // Remove active class from all rooms
+                rooms.forEach(r => r.classList.remove('active'));
+                // Add active class to clicked room
+                room.classList.add('active');
+
+                // Update info panel
+                const roomKey = room.dataset.room;
+                const data = roomData[roomKey];
+                if (data) {
+                    roomName.textContent = data.name;
+                    roomDimensions.textContent = data.dimensions;
+                    featureList.innerHTML = '';
+                    data.features.forEach(feature => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<i class="fas fa-circle"></i> ${feature}`;
+                        featureList.appendChild(li);
+                    });
+                }
+            });
+        });
+
+        // Toggle electrical overlay
+        const toggleElectrical = document.getElementById('toggleElectrical');
+        const electricalOverlay = document.getElementById('electricalOverlay');
+        toggleElectrical.addEventListener('click', () => {
+            electricalOverlay.classList.toggle('active');
+            toggleElectrical.classList.toggle('active');
+        });
+
+        // Toggle plumbing overlay
+        const togglePlumbing = document.getElementById('togglePlumbing');
+        const plumbingOverlay = document.getElementById('plumbingOverlay');
+        togglePlumbing.addEventListener('click', () => {
+            plumbingOverlay.classList.toggle('active');
+            togglePlumbing.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

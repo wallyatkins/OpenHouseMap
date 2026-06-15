@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open House Map — 159 Stone Lake Court</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-house-laptop"></i>
+                <span>Open House Map</span>
+            </div>
+            <p class="tagline">Private Property & Home Mapper</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <span class="nav-section-label">LAND</span>
+                <a href="#" class="nav-item active" data-view="map-surface">
+                    <i class="fa-solid fa-map-location-dot"></i> Surface Map
+                </a>
+                <a href="#" class="nav-item" data-view="map-utilities">
+                    <i class="fa-solid fa-bolt"></i> Utilities
+                </a>
+                <a href="#" class="nav-item" data-view="map-features">
+                    <i class="fa-solid fa-tree"></i> Structures & Features
+                </a>
+                <a href="#" class="nav-item" data-view="map-landscape">
+                    <i class="fa-solid fa-leaf"></i> Landscape & Ground
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <span class="nav-section-label">HOUSE</span>
+                <a href="#" class="nav-item" data-view="house-3d">
+                    <i class="fa-solid fa-cube"></i> 3D House Model
+                </a>
+                <a href="#" class="nav-item" data-view="house-detail">
+                    <i class="fa-solid fa-hammer"></i> Detail Layers
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <span class="nav-section-label">DATA</span>
+                <a href="#" class="nav-item" data-view="blueprints">
+                    <i class="fa-solid fa-file-lines"></i> Blueprints / CAD
+                </a>
+                <a href="#" class="nav-item" data-view="maintenance">
+                    <i class="fa-solid fa-clipboard-list"></i> Maintenance Log
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="address-block">
+                <i class="fa-solid fa-location-dot"></i>
+                <div>
+                    <div class="address-name">159 Stone Lake Court</div>
+                    <div class="address-city">Yorktown, VA 23693</div>
+                </div>
+            </div>
+            <button class="btn-settings" id="btn-settings" title="Settings">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <!-- ========== VIEW: Surface Map ========== -->
+        <section class="view view-active" id="view-map-surface">
+            <header class="view-toolbar">
+                <div class="toolbar-left">
+                    <h1>Property Map</h1>
+                    <span class="subtitle">159 Stone Lake Court, Yorktown, VA 23693</span>
+                </div>
+                <div class="toolbar-right">
+                    <div class="layer-toggles">
+                        <button class="toggle-btn active" data-layer="parcel" title="Parcel boundary">
+                            <i class="fa-solid fa-vector-square"></i> Parcel
+                        </button>
+                        <button class="toggle-btn active" data-layer="aerial" title="Aerial imagery">
+                            <i class="fa-solid fa-satellite"></i> Aerial
+                        </button>
+                        <button class="toggle-btn" data-layer="utilities" title="Utilities layer">
+                            <i class="fa-solid fa-bolt"></i> Utilities
+                        </button>
+                        <button class="toggle-btn" data-layer="structures" title="Buildings & structures">
+                            <i class="fa-solid fa-house-chimney"></i> Structures
+                        </button>
+                        <button class="toggle-btn" data-layer="landscape" title="Trees & landscaping">
+                            <i class="fa-solid fa-seedling"></i> Landscape
+                        </button>
+                    </div>
+                    <div class="tool-buttons">
+                        <button class="tool-btn" id="tool-osm-baseline" title="Fetch OSM baseline data (version 0)">
+                            <i class="fa-solid fa-satellite-dish"></i>
+                            <span class="tool-label">OSM Baseline</span>
+                        </button>
+                        <button class="tool-btn" id="tool-history" title="View changeset history">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <span class="tool-label">History</span>
+                        </button>
+                        <button class="tool-btn" id="tool-draw" title="Draw polygon">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button>
+                        <button class="tool-btn" id="tool-pin" title="Drop a pin">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </button>
+                        <button class="tool-btn" id="tool-measure" title="Measure distance">
+                            <i class="fa-solid fa-ruler"></i>
+                        </button>
+                        <button class="tool-btn" id="tool-snapshot" title="Take snapshot">
+                            <i class="fa-solid fa-camera"></i>
+                            <span class="tool-label">Snapshot</span>
+                        </button>
+                        <button class="tool-btn" id="tool-export" title="Export data">
+                            <i class="fa-solid fa-download"></i>
+                        </button>
+                        <button class="tool-btn" id="tool-import" title="Import data">
+                            <i class="fa-solid fa-upload"></i>
+                        </button>
+                        <input type="file" id="import-file" accept=".json" style="display:none">
+                    </div>
+                </div>
+            </header>
+
+            <div class="map-container">
+                <div id="map-surface" class="map"></div>
+
+                <!-- Feature Detail Panel -->
+                <div class="detail-panel" id="panel-feature">
+                    <div class="panel-header">
+                        <h3>Feature Details</h3>
+                        <button class="panel-close" id="panel-close">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="panel-body" id="panel-body">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== VIEW: 3D House ========== -->
+        <section class="view" id="view-house-3d">
+            <header class="view-toolbar">
+                <div class="toolbar-left">
+                    <h1>3D House Model</h1>
+                    <span class="subtitle">Interactive home detail model — 159 Stone Lake Court</span>
+                </div>
+                <div class="toolbar-right">
+                    <div class="xray-controls">
+                        <span>X-Ray Mode:</span>
+                        <button class="toggle-btn active" data-xray="none">Normal</button>
+                        <button class="toggle-btn" data-xray="structure">Structure</button>
+                        <button class="toggle-btn" data-xray="electrical">Electrical</button>
+                        <button class="toggle-btn" data-xray="plumbing">Plumbing</button>
+                        <button class="toggle-btn" data-xray="hvac">HVAC</button>
+                        <button class="toggle-btn" data-xray="insulation">Insulation</button>
+                    </div>
+                    <div class="tool-buttons">
+                        <button class="tool-btn" id="h3d-upload" title="Upload blueprint/image">
+                            <i class="fa-solid fa-file-import"></i>
+                        </button>
+                        <button class="tool-btn" id="h3d-section" title="Cross section cut">
+                            <i class="fa-solid fa-scissors"></i>
+                        </button>
+                        <button class="tool-btn" id="h3d-annotate" title="Add annotation">
+                            <i class="fa-solid fa-sticky-note"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="house-container">
+                <div id="house-3d-view" class="house-view"></div>
+
+                <!-- Layer toggle panel -->
+                <div class="layer-panel" id="house-layers">
+                    <h4>Visible Layers</h4>
+                    <label class="layer-check">
+                        <input type="checkbox" checked data-hlayer="slab">
+                        Foundation Slab
+                    </label>
+                    <label class="layer-check">
+                        <input type="checkbox" checked data-hlayer="floor">
+                        Floor Plan
+                    </label>
+                    <label class="layer-check">
+                        <input type="checkbox" checked data-hlayer="walls">
+                        Walls / Studs
+                    </label>
+                    <label class="layer-check">
+                        <input type="checkbox" checked data-hlayer="roof">
+                        Roof / Trusses
+                    </label>
+                    <label class="layer-check">
+                        <input type="checkbox" data-hlayer="drywall">
+                        Drywall (interior)
+                    </label>
+                    <label class="layer-check">
+                        <input type="checkbox" data-hlayer="electrical">
+                        Electrical (wires, panel, outlets)
+                    </label>
+                    <label class="layer-check">
+                        <input type="checkbox" data-hlayer="plumbing-h">
+                        Plumbing (pipes, fixtures)
+                    </label>
+                    <label class="layer-check">
+                        <input type="checkbox" data-hlayer="hvac-h">
+                        HVAC (ducts, vents)
+                    </label>
+                    <label class="layer-check">
+                        <input type="checkbox" data-hlayer="insulation-h">
+                        Insulation
+                    </label>
+                    <label class="layer-check">
+                        <input type="checkbox" data-hlayer="windows">
+                        Windows
+                    </label>
+                    <label class="layer-check">
+                        <input type="checkbox" data-hlayer="doors">
+                        Doors
+                    </label>
+                    <label class="layer-check">
+                        <input type="checkbox" data-hlayer="crawl">
+                        Crawl Space
+                    </label>
+                </div>
+
+                <!-- Property info sidebar -->
+                <div class="house-info-sidebar" id="house-info">
+                    <h4>Property Information</h4>
+                    <div class="info-block">
+                        <p><strong>Address:</strong> 159 Stone Lake Court, Yorktown, VA 23693</p>
+                        <p><strong>Lot Size:</strong> <span id="lot-size-display">—</span></p>
+                        <p><strong>Year Built:</strong> <span id="year-built-display">—</span></p>
+                        <p><strong>Living Area:</strong> <span id="living-area-display">—</span></p>
+                        <p><strong>Stories:</strong> <span id="stories-display">—</span></p>
+                        <p><strong>Foundation:</strong> <span id="foundation-display">—</span></p>
+                        <p><strong>Roof Type:</strong> <span id="roof-type-display">—</span></p>
+                        <p><strong>Exterior:</strong> <span id="exterior-display">—</span></p>
+                    </div>
+                    <div class="info-block">
+                        <h5>Quick Actions</h5>
+                        <button class="btn-small" id="btn-edit-property">Edit Property Info</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== VIEW: House Detail ========== -->
+        <section class="view" id="view-house-detail">
+            <header class="view-toolbar">
+                <div class="toolbar-left">
+                    <h1>House Detail Layers</h1>
+                    <span class="subtitle">Explore your home from foundation to roof</span>
+                </div>
+            </header>
+
+            <div class="house-detail-container">
+                <div class="detail-tabs" id="detail-tabs">
+                    <button class="detail-tab active" data-tab="foundation">
+                        <i class="fa-solid fa-layer-group"></i> Foundation & Slab
+                    </button>
+                    <button class="detail-tab" data-tab="structure">
+                        <i class="fa-solid fa-hammer"></i> Structure / Framing
+                    </button>
+                    <button class="detail-tab" data-tab="electrical-detail">
+                        <i class="fa-solid fa-bolt"></i> Electrical
+                    </button>
+                    <button class="detail-tab" data-tab="plumbing-detail">
+                        <i class="fa-solid fa-faucet-drip"></i> Plumbing
+                    </button>
+                    <button class="detail-tab" data-tab="hvac-detail">
+                        <i class="fa-solid fa-wind"></i> HVAC
+                    </button>
+                    <button class="detail-tab" data-tab="insulation-detail">
+                        <i class="fa-solid fa-thermometer-half"></i> Insulation
+                    </button>
+                    <button class="detail-tab" data-tab="finishes">
+                        <i class="fa-solid fa-paint-roller"></i> Finishes
+                    </button>
+                </div>
+
+                <div class="detail-content" id="detail-content">
+                    <!-- Populated by JS based on active tab -->
+                </div>
+
+                <div class="detail-sidebar">
+                    <h4>Component Inventory</h4>
+                    <div id="component-list" class="component-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== VIEW: Blueprints ========== -->
+        <section class="view" id="view-blueprints">
+            <header class="view-toolbar">
+                <div class="toolbar-left">
+                    <h1>Blueprints & CAD Drawings</h1>
+                    <span class="subtitle">Upload floor plans, elevations, site plans</span>
+                </div>
+                <div class="toolbar-right">
+                    <div class="tool-buttons">
+                        <button class="tool-btn" id="bp-upload" title="Upload file">
+                            <i class="fa-solid fa-file-import"></i>
+                        </button>
+                        <button class="tool-btn" id="bp-measure" title="Measure on blueprint">
+                            <i class="fa-solid fa-ruler"></i>
+                        </button>
+                        <button class="tool-btn" id="bp-annotate" title="Add annotation">
+                            <i class="fa-solid fa-pen-fancy"></i>
+                        </button>
+                    </div>
+                    <input type="file" id="bp-file" accept="image/*,.pdf" style="display:none">
+                </div>
+            </header>
+
+            <div class="blueprint-container">
+                <div id="blueprint-canvas" class="blueprint-view">
+                    <div class="placeholder-blueprint" id="bp-placeholder">
+                        <i class="fa-solid fa-file-image"></i>
+                        <h3>Upload a Blueprint or CAD Drawing</h3>
+                        <p>Supported: PNG, JPG, SVG, PDF</p>
+                        <p>Images can be scaled, measured, and annotated.</p>
+                        <button class="btn btn-primary" id="bp-browse">Browse Files</button>
+                    </div>
+                    <canvas id="bp-canvas" style="display:none;"></canvas>
+                </div>
+                <div class="bp-thumbnails" id="bp-thumbnails">
+                    <!-- Uploaded blueprints listed here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== VIEW: Maintenance ========== -->
+        <section class="view" id="view-maintenance">
+            <header class="view-toolbar">
+                <div class="toolbar-left">
+                    <h1>Maintenance Log</h1>
+                    <span class="subtitle">Track repairs, inspections, and upgrades</span>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn btn-primary" id="btn-new-maintenance">
+                        <i class="fa-solid fa-plus"></i> New Entry
+                    </button>
+                </div>
+            </header>
+
+            <div class="maintenance-container">
+                <div class="maintenance-filters">
+                    <input type="text" id="maint-search" placeholder="Search entries...">
+                    <select id="maint-category-filter">
+                        <option value="">All Categories</option>
+                        <option value="roof">Roof</option>
+                        <option value="electrical">Electrical</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="hvac">HVAC</option>
+                        <option value="exterior">Exterior</option>
+                        <option value="interior">Interior</option>
+                        <option value="landscaping">Landscaping</option>
+                        <option value="foundation">Foundation</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div id="maintenance-list" class="maintenance-list">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                        <p>No maintenance entries yet. Click "New Entry" to add one.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ========== MODALS ========== -->
+
+    <!-- Feature Edit Modal -->
+    <div class="modal-overlay" id="modal-feature">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title">Add Feature</h3>
+                <button class="modal-close" id="modal-close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Name *</label>
+                        <input type="text" id="feat-name" placeholder="e.g., Back Patio, Oak Tree, Electrical Line">
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="feat-category">
+                            <optgroup label="Structures">
+                                <option value="house">House (main)</option>
+                                <option value="porch">Porch</option>
+                                <option value="deck">Deck</option>
+                                <option value="shed">Shed</option>
+                                <option value="garage">Garage</option>
+                                <option value="patio">Patio</option>
+                            </optgroup>
+                            <optgroup label="Ground & Surface">
+                                <option value="driveway">Driveway</option>
+                                <option value="walkway">Walkway / Walking Pad</option>
+                                <option value="concrete">Concrete Pad</option>
+                                <option value="footbridge">Footbridge</option>
+                            </optgroup>
+                            <optgroup label="Utilities">
+                                <option value="electricity">Electricity Lines</option>
+                                <option value="gas">Natural Gas Lines</option>
+                                <option value="water">Water Lines / Meter</option>
+                                <option value="sewer">Sewer / Septic</option>
+                                <option value="internet">Internet / Phone</option>
+                                <option value="sprinkler">Sprinkler / Irrigation</option>
+                                <option value="stormwater">Stormwater Drainage</option>
+                            </optgroup>
+                            <optgroup label="Landscape">
+                                <option value="tree">Tree</option>
+                                <option value="shrubs">Shrubs</option>
+                                <option value="garden">Garden Bed</option>
+                                <option value="lawn">Lawn / Grass Area</option>
+                                <option value="mulch">Mulch / Ground Cover</option>
+                                <option value="fence">Fence</option>
+                            </optgroup>
+                            <optgroup label="Other">
+                                <option value="mailbox">Mailbox</option>
+                                <option value="lighting">Outdoor Lighting</option>
+                                <option value="drainage">Drainage</option>
+                                <option value="other">Other</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Material / Type</label>
+                        <input type="text" id="feat-material" placeholder="e.g., Brick Patio, Cedar Deck, Oak Tree">
+                    </div>
+                    <div class="form-group">
+                        <label>Year Installed</label>
+                        <input type="number" id="feat-year" placeholder="e.g., 2015">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="feat-notes" rows="3" placeholder="Additional details, specs, etc."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="modal-cancel">Cancel</button>
+                <button class="btn btn-primary" id="modal-save">Save Feature</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Property Info Modal -->
+    <div class="modal-overlay" id="modal-property">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Edit Property Information</h3>
+                <button class="modal-close" id="prop-close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Lot Size</label>
+                        <input type="text" id="prop-lot" placeholder="e.g., 0.35 acres">
+                    </div>
+                    <div class="form-group">
+                        <label>Year Built</label>
+                        <input type="number" id="prop-year" placeholder="e.g., 2005">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Living Area (sq ft)</label>
+                        <input type="text" id="prop-area" placeholder="e.g., 1,800 sq ft">
+                    </div>
+                    <div class="form-group">
+                        <label>Stories</label>
+                        <input type="text" id="prop-stories" placeholder="e.g., 2">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Foundation Type</label>
+                        <input type="text" id="prop-foundation" placeholder="e.g., Slab on grade">
+                    </div>
+                    <div class="form-group">
+                        <label>Roof Type</label>
+                        <input type="text" id="prop-roof" placeholder="e.g., Asphalt shingle, gable">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Exterior Material</label>
+                        <input type="text" id="prop-exterior" placeholder="e.g., Brick veneer">
+                    </div>
+                    <div class="form-group">
+                        <label>Siding / Trim</label>
+                        <input type="text" id="prop-siding" placeholder="e.g., Vinyl trim">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Additional Notes</label>
+                    <textarea id="prop-notes" rows="3" placeholder="Any other property details..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="prop-cancel">Cancel</button>
+                <button class="btn btn-primary" id="prop-save">Save Property</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Modal -->
+    <div class="modal-overlay" id="modal-maintenance">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>New Maintenance Entry</h3>
+                <button class="modal-close" id="maint-close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Title *</label>
+                        <input type="text" id="maint-title" placeholder="e.g., Replace roof shingles">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="maint-category">
+                            <option value="roof">Roof</option>
+                            <option value="electrical">Electrical</option>
+                            <option value="plumbing">Plumbing</option>
+                            <option value="hvac">HVAC</option>
+                            <option value="exterior">Exterior</option>
+                            <option value="interior">Interior</option>
+                            <option value="landscaping">Landscaping</option>
+                            <option value="foundation">Foundation</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="maint-date">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="maint-status">
+                            <option value="planned">Planned</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Cost ($)</label>
+                        <input type="number" id="maint-cost" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Next Due</label>
+                        <input type="date" id="maint-next-due">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="maint-notes" rows="3" placeholder="Details about the work..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="maint-cancel">Cancel</button>
+                <button class="btn btn-primary" id="maint-save">Save Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="assets/js/overpass.js"></script>
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

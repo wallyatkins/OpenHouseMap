@@ -1,0 +1,100 @@
+{
+  "address": "16 Belinda Drive, Newport News, VA 23601",
+  "total_width_frame": "59-0",
+  "total_width_brick": "59-10",
+  "total_depth_frame": "33-0",
+  "total_depth_brick": "35-10",
+  "scale": "1/4 inch = 1 foot",
+  "stories": 1,
+  "rooms": {
+    "garage": {
+      "width": "12-0",
+      "depth": "23-0",
+      "features": [
+        "8x7 Wood Overhead Door",
+        "4 inch Concrete Slab flooring",
+        "Disappearing Stairs to attic",
+        "2x8 Joists 16 inch O.C.",
+        "40x30 Concrete Pad with hose bib"
+      ]
+    },
+    "kitchen": {
+      "width": "12-4",
+      "depth": "12-0",
+      "features": [
+        "Double sink under window",
+        "36 inch Counter",
+        "Range/Stove space",
+        "Refrigerator space",
+        "3-2 foot opening to Family Room"
+      ]
+    },
+    "living_room": {
+      "width": "25-8",
+      "depth": "12-0",
+      "features": [
+        "Open concept with dining",
+        "Front porch with Brick Steps",
+        "Main entry door"
+      ]
+    },
+    "dining_room": {
+      "width": "25-8",
+      "depth": "12-0",
+      "features": [
+        "Open concept with living room",
+        "Large window"
+      ]
+    },
+    "family_room": {
+      "width": "15-0",
+      "depth": "15-0",
+      "features": [
+        "Window unit 36/30/20",
+        "Rear exit door with Brick Steps"
+      ]
+    },
+    "master_bedroom": {
+      "width": "15-8",
+      "depth": "12-0",
+      "features": [
+        "Rear right corner",
+        "Built-in closet"
+      ]
+    },
+    "bedroom_1": {
+      "width": "11-7",
+      "depth": "11-2",
+      "features": [
+        "Front facing window",
+        "Built-in closet"
+      ]
+    },
+    "bedroom_2": {
+      "width": "9-11",
+      "depth": "11-2",
+      "features": [
+        "Front facing window",
+        "Dedicated closet"
+      ]
+    },
+    "hall_bathroom": {
+      "width": "5-0",
+      "depth": "5-0",
+      "features": [
+        "5 foot Tub",
+        "Toilet",
+        "Vanity/Sink"
+      ]
+    },
+    "ensuite_bathroom": {
+      "width": "3-0",
+      "depth": "3-0",
+      "features": [
+        "3 foot Shower Stall",
+        "Toilet",
+        "Sink"
+      ]
+    }
+  }
+}
